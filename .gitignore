@@ -1,0 +1,329 @@
+# rexf - Reproducible Experiments Framework
+# .gitignore for excluding generated files from tests and demos
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# poetry
+#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+#   This is especially recommended for binary packages to ensure reproducibility, and is more
+#   commonly ignored for libraries.
+#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poetry.lock
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#pdm.lock
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
+#   https://pdm.fming.dev/#use-with-ide
+.pdm.toml
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ==============================================
+# REXF SPECIFIC - GENERATED FILES FROM TESTS AND DEMOS
+# ==============================================
+
+# Experiment databases (SQLite files)
+*.db
+experiments.db
+demo_experiments.db
+simple_demo.db
+test_experiments.db
+
+# Artifact directories
+artifacts/
+demo_artifacts/
+simple_artifacts/
+test_artifacts/
+
+# Generated visualization files
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.pdf
+demo_*.png
+demo_*.jpg
+demo_*.svg
+demo_*.pdf
+test_*.png
+test_*.jpg
+test_*.svg
+test_*.pdf
+
+# Export files from demos/tests
+demo_*.json
+demo_*.yaml
+demo_*.yml
+demo_*.csv
+test_*.json
+test_*.yaml
+test_*.yml
+test_*.csv
+
+# Comparison files
+*_comparison.*
+*_timeline.*
+*_dashboard.*
+*_metrics.*
+
+# Temporary experiment files
+temp_*.db
+temp_artifacts/
+*.tmp
+
+# Log files from experiments
+*.log
+experiment_*.log
+demo_*.log
+test_*.log
+
+# Backup files
+*.bak
+*.backup
+
+# OS specific
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+
+# ==============================================
+# KEEP THESE FILES (explicitly track important files)
+# ==============================================
+# The following important files should always be tracked:
+# - setup.py
+# - requirements.txt
+# - README.md
+# - USAGE.md
+# - LIBRARY_OVERVIEW.md
+# - rexf/ (entire package directory)
+# - examples/ (example scripts, but not their output)
+# - test_basic.py (test script, but not its output)
+
+# Force include example scripts (but not their outputs)
+!examples/*.py
+!test_*.py
+
+# Force include documentation
+!*.md
+!requirements.txt
+!setup.py
+
+# Force include package source
+!rexf/
+!rexf/**/*.py
