@@ -57,6 +57,9 @@ Repository = "https://github.com/dhruv1110/rexf.git"
 "Bug Reports" = "https://github.com/dhruv1110/rexf/issues"
 Changelog = "https://github.com/dhruv1110/rexf/blob/main/CHANGELOG.md"
 
+[project.scripts]
+rexf-analytics = "rexf.cli.analytics:main"
+
 [tool.setuptools]
 packages = ["rexf"]
 
@@ -107,13 +110,32 @@ strict_equality = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --strict-markers --strict-config"
-testpaths = [
-    "tests",
+addopts = [
+    "-ra",
+    "-v",
+    "--strict-markers",
+    "--strict-config",
+    "--tb=short",
+    "--durations=10",
+    "--cov=rexf",
+    "--cov-report=term-missing",
+    "--cov-report=xml",
+    "--cov-fail-under=30",
 ]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
 markers = [
+    "unit: marks tests as unit tests (default, fast)",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
+    "cli: marks tests that test CLI functionality",
+    "dashboard: marks tests that test dashboard functionality",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore::UserWarning",
 ]
 
 [tool.coverage.run]

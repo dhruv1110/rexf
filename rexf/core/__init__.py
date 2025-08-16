@@ -1,23 +1,6 @@
-"""Core interfaces and data structures for rexf."""
+"""Core functionality for rexf experiments."""
 
-from .decorators import ExperimentBuilder, experiment_config
-from .interfaces import (
-    ArtifactManagerInterface,
-    ExportInterface,
-    StorageInterface,
-    VisualizationInterface,
-)
 from .models import ExperimentData, ExperimentRun
-from .runner import ExperimentRunner
+from .simple_api import experiment
 
-__all__ = [
-    "StorageInterface",
-    "ArtifactManagerInterface",
-    "ExportInterface",
-    "VisualizationInterface",
-    "ExperimentData",
-    "ExperimentRun",
-    "experiment_config",
-    "ExperimentBuilder",
-    "ExperimentRunner",
-]
+__all__ = ["experiment", "ExperimentRun", "ExperimentData"]
