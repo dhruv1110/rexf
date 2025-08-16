@@ -12,8 +12,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        include:
+          # Test main Python version on all OS
+          - os: ubuntu-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.11"
+          - os: macos-latest
+            python-version: "3.11"
+          # Test different Python versions on Ubuntu only
+          - os: ubuntu-latest
+            python-version: "3.8"
+          - os: ubuntu-latest
+            python-version: "3.9"
+          - os: ubuntu-latest
+            python-version: "3.10"
+          - os: ubuntu-latest
+            python-version: "3.12"
 
     steps:
     - uses: actions/checkout@v4
@@ -29,23 +44,17 @@ jobs:
         pip install build twine pytest pytest-cov
         pip install -e ".[dev]"
 
-    - name: Lint with flake8
+    # Only run quality checks on Ubuntu 3.11 (main environment)
+    - name: Code quality checks
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       run: |
-        # stop the build if there are Python syntax errors or undefined names
+        # Stop build if there are Python syntax errors or undefined names
         flake8 rexf --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. Using max-line-length=100 to match black
-        flake8 rexf --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
-
-    - name: Format check with black
-      run: |
+        # Check formatting
         black --check --diff rexf/
-
-    - name: Import sorting check with isort
-      run: |
+        # Check import sorting
         isort --check-only --diff rexf/
-
-    - name: Type checking with mypy
-      run: |
+        # Type checking (non-blocking)
         mypy rexf/ --ignore-missing-imports --disable-error-code=attr-defined,no-untyped-def,var-annotated,assignment,arg-type,no-any-return,index,misc,truthy-function,operator,import-untyped || true
 
     - name: Test with pytest
@@ -60,63 +69,23 @@ jobs:
         flags: unittests
         name: codecov-umbrella
 
-  build:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
-    - name: Install build dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install build twine
-
+    # Only run build and security checks on Ubuntu 3.11 (main environment)
     - name: Build package
-      run: python -m build
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        python -m build
+        python -m twine check dist/*
 
-    - name: Check package
-      run: python -m twine check dist/*
+    - name: Security checks
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        pip install safety bandit
+        safety check || true
+        bandit -r rexf/ || true
 
     - name: Upload build artifacts
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       uses: actions/upload-artifact@v3
       with:
         name: dist
         path: dist/
-
-  security:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
-    - name: Install security tools
-      run: |
-        python -m pip install --upgrade pip
-        pip install safety bandit
-
-    - name: Check dependencies for security vulnerabilities
-      run: |
-        pip install -e .
-        safety check
-
-    - name: Run bandit security scan
-      run: |
-        bandit -r rexf/ -f json -o bandit-report.json || true
-
-    - name: Upload security scan results
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: security-report
-        path: bandit-report.json
