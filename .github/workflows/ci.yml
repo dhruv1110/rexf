@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Test main Python version on all OS
+          - os: ubuntu-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.11"
+          - os: macos-latest
+            python-version: "3.11"
+          # Test different Python versions on Ubuntu only
+          - os: ubuntu-latest
+            python-version: "3.8"
+          - os: ubuntu-latest
+            python-version: "3.9"
+          - os: ubuntu-latest
+            python-version: "3.10"
+          - os: ubuntu-latest
+            python-version: "3.12"
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine pytest pytest-cov
+        pip install -e ".[dev]"
+
+    # Only run quality checks on Ubuntu 3.11 (main environment)
+    - name: Code quality checks
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        # Stop build if there are Python syntax errors or undefined names
+        flake8 rexf --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Check formatting
+        black --check --diff rexf/
+        # Check import sorting
+        isort --check-only --diff rexf/
+        # Type checking (non-blocking)
+        mypy rexf/ --ignore-missing-imports --disable-error-code=attr-defined,no-untyped-def,var-annotated,assignment,arg-type,no-any-return,index,misc,truthy-function,operator,import-untyped || true
+
+    - name: Test with pytest
+      run: |
+        pytest tests/ -v --tb=short --cov=rexf --cov-report=xml --cov-report=term-missing
+
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+    # Only run build and security checks on Ubuntu 3.11 (main environment)
+    - name: Build package
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        python -m build
+        python -m twine check dist/*
+
+    - name: Security checks
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      run: |
+        pip install safety bandit
+        safety check || true
+        bandit -r rexf/ || true
+
+    - name: Upload build artifacts
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/

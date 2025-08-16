@@ -327,3 +327,14 @@ $RECYCLE.BIN/
 # Force include package source
 !rexf/
 !rexf/**/*.py
+
+# Force include GitHub Actions and configurations
+!.github/
+!.github/**/*.yml
+!.github/**/*.yaml
+!.github/**/*.md
+!.pre-commit-config.yaml
+
+/examples/monte_carlo_artifacts/
+/examples/monte_carlo_results.json
+/examples/monte_carlo_results.yaml
