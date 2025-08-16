@@ -334,3 +334,7 @@ $RECYCLE.BIN/
 !.github/**/*.yaml
 !.github/**/*.md
 !.pre-commit-config.yaml
+
+/examples/monte_carlo_artifacts/
+/examples/monte_carlo_results.json
+/examples/monte_carlo_results.yaml
