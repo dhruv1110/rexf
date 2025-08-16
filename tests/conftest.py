@@ -20,5 +20,5 @@ def sample_experiment_data():
     return {
         "parameters": {"x": 5.0, "y": 3.0},
         "results": {"output": 8.0},
-        "metrics": {"accuracy": 0.95, "loss": 0.05}
+        "metrics": {"accuracy": 0.95, "loss": 0.05},
     }

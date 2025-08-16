@@ -29,25 +29,47 @@ class SQLiteStorage(StorageInterface):
 
     def close(self):
         """Close any open connections and clean up resources."""
-        # Force close any lingering connections by creating and immediately closing one
         try:
             # First, close any existing connections by forcing a garbage collection
             import gc
 
             gc.collect()
 
-            # Then explicitly close a connection to the database
+            # Connect and clean up WAL files
             conn = sqlite3.connect(self.db_path)
-            conn.close()
+            try:
+                # Switch back to DELETE mode to clean up WAL files
+                conn.execute("PRAGMA journal_mode=DELETE")
+                conn.execute("VACUUM")
+            finally:
+                conn.close()
 
             # Force another garbage collection to ensure cleanup
             gc.collect()
+
+            # Try to remove WAL and SHM files if they exist
+            wal_file = Path(str(self.db_path) + "-wal")
+            shm_file = Path(str(self.db_path) + "-shm")
+
+            for temp_file in [wal_file, shm_file]:
+                try:
+                    if temp_file.exists():
+                        temp_file.unlink()
+                except Exception:
+                    pass
+
         except Exception:
             pass
 
     def _init_database(self):
         """Initialize database schema."""
         with sqlite3.connect(self.db_path) as conn:
+            # Enable WAL mode for better Windows compatibility
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA synchronous=NORMAL")
+            conn.execute("PRAGMA temp_store=MEMORY")
+            conn.execute("PRAGMA mmap_size=268435456")  # 256MB
+
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS experiments (
