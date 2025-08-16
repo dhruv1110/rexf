@@ -412,6 +412,7 @@ class ExperimentVisualizer(VisualizationInterface):
                 # Fall back to dict format if pandas can't handle the data
                 if save_path:
                     import csv
+
                     with open(save_path, "w", newline="") as f:
                         if data:
                             writer = csv.DictWriter(f, fieldnames=data[0].keys())
