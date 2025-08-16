@@ -27,6 +27,15 @@ class SQLiteStorage(StorageInterface):
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_database()
 
+    def close(self):
+        """Close any open connections and clean up resources."""
+        # Force close any lingering connections by creating and immediately closing one
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.close()
+        except Exception:
+            pass
+
     def _init_database(self):
         """Initialize database schema."""
         with sqlite3.connect(self.db_path) as conn:

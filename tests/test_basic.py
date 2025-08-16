@@ -115,6 +115,16 @@ def test_basic_functionality():
             import traceback
             traceback.print_exc()
             raise  # Re-raise the exception to fail the test
+        finally:
+            # Clean up resources before temp directory deletion (Windows compatibility)
+            try:
+                if 'runner' in locals():
+                    runner.close()
+                # Small delay to allow Windows to release file handles
+                import time
+                time.sleep(0.1)
+            except Exception:
+                pass
 
 
 def test_with_visualization():
@@ -166,6 +176,16 @@ def test_with_visualization():
     except Exception as e:
         print(f"❌ Visualization test failed: {e}")
         raise  # Re-raise the exception to fail the test
+    finally:
+        # Clean up resources before temp directory deletion (Windows compatibility)
+        try:
+            if 'runner' in locals():
+                runner.close()
+            # Small delay to allow Windows to release file handles
+            import time
+            time.sleep(0.1)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
