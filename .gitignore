@@ -334,12 +334,3 @@ $RECYCLE.BIN/
 !.github/**/*.yaml
 !.github/**/*.md
 !.pre-commit-config.yaml
-
-/examples/monte_carlo_artifacts/
-/examples/monte_carlo_results.json
-/examples/monte_carlo_results.yaml
-
-# Internal planning files (not for public repo)
-ROADMAP_USER_FOCUSED.md
-BRAINSTORM_*.md
-PLANNING_*.md
