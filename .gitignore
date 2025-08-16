@@ -220,6 +220,8 @@ cython_debug/
 
 # Experiment databases (SQLite files)
 *.db
+*.db-shm
+*.db-wal
 experiments.db
 demo_experiments.db
 simple_demo.db
@@ -338,3 +340,8 @@ $RECYCLE.BIN/
 /examples/monte_carlo_artifacts/
 /examples/monte_carlo_results.json
 /examples/monte_carlo_results.yaml
+
+# Internal planning files (not for public repo)
+ROADMAP_USER_FOCUSED.md
+BRAINSTORM_*.md
+PLANNING_*.md

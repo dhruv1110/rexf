@@ -6,29 +6,56 @@ on:
   pull_request:
     branches: [ main, dev ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  # Fast unit tests and quality checks
+  quality-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,test]"
+
+    - name: Code quality checks
+      run: |
+        black --check rexf tests examples
+        isort --check-only rexf tests examples
+        flake8 rexf tests --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 rexf tests --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+
+    - name: Type checking (non-blocking)
+      continue-on-error: true
+      run: mypy rexf --ignore-missing-imports --disable-error-code=attr-defined,no-untyped-def,var-annotated,assignment,arg-type,no-any-return,index,misc,truthy-function,operator,import-untyped
+
+    - name: Unit tests
+      run: pytest -m "unit" --tb=short --durations=10
+
+  # Cross-platform core testing
+  test-core:
+    needs: quality-and-unit
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Test main Python version on all OS
           - os: ubuntu-latest
             python-version: "3.11"
           - os: windows-latest
             python-version: "3.11"
           - os: macos-latest
             python-version: "3.11"
-          # Test different Python versions on Ubuntu only
-          - os: ubuntu-latest
-            python-version: "3.8"
-          - os: ubuntu-latest
-            python-version: "3.9"
-          - os: ubuntu-latest
-            python-version: "3.10"
-          - os: ubuntu-latest
-            python-version: "3.12"
 
     steps:
     - uses: actions/checkout@v4
@@ -37,55 +64,107 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build twine pytest pytest-cov
-        pip install -e ".[dev]"
+        pip install -e ".[dev,test]"
 
-    # Only run quality checks on Ubuntu 3.11 (main environment)
-    - name: Code quality checks
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+    - name: Core functionality tests
+      run: pytest -m "not slow and not integration" --tb=short
+
+  # Python version compatibility (Ubuntu only)
+  test-versions:
+    needs: quality-and-unit
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies
       run: |
-        # Stop build if there are Python syntax errors or undefined names
-        flake8 rexf --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Check formatting
-        black --check --diff rexf/
-        # Check import sorting
-        isort --check-only --diff rexf/
-        # Type checking (non-blocking)
-        mypy rexf/ --ignore-missing-imports --disable-error-code=attr-defined,no-untyped-def,var-annotated,assignment,arg-type,no-any-return,index,misc,truthy-function,operator,import-untyped || true
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,test]"
 
-    - name: Test with pytest
+    - name: Core tests
+      run: pytest -m "not slow and not integration" --tb=short
+
+  # Full test suite with coverage
+  test-full:
+    needs: [test-core, test-versions]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: Install dependencies
       run: |
-        pytest tests/ -v --tb=short --cov=rexf --cov-report=xml --cov-report=term-missing
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,test]"
 
-    - name: Upload coverage to Codecov
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+    - name: Full test suite with coverage
+      run: pytest --cov=rexf --cov-report=xml --cov-report=term-missing
+
+    - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unittests
         name: codecov-umbrella
+        fail_ci_if_error: false
 
-    # Only run build and security checks on Ubuntu 3.11 (main environment)
+  # Security and build checks
+  security-build:
+    needs: quality-and-unit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev,test]"
+        pip install build safety bandit
+
+    - name: Security checks (non-blocking)
+      continue-on-error: true
+      run: |
+        safety check --ignore=70612 || true
+        bandit -r rexf -f json -o bandit-report.json || true
+
     - name: Build package
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-      run: |
-        python -m build
-        python -m twine check dist/*
+      run: python -m build
 
-    - name: Security checks
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+    - name: Check build
       run: |
-        pip install safety bandit
-        safety check || true
-        bandit -r rexf/ || true
+        pip install dist/*.whl
+        python -c "import rexf; print(f'RexF version: {rexf.__version__}')"
 
     - name: Upload build artifacts
-      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       uses: actions/upload-artifact@v4
       with:
-        name: dist
+        name: dist-${{ github.sha }}
         path: dist/
+        retention-days: 7

@@ -1,60 +1,39 @@
-"""rexf - Reproducible Experiments Framework.
+"""rexf - Smart Experiments Framework.
 
 A lightweight Python library for reproducible computational experiments
-with a clean, decorator-based API and pluggable architecture.
+with an ultra-simple, smart API.
+
+Usage:
+    from rexf import experiment, run
+
+    @experiment
+    def my_experiment(param1, param2):
+        result = do_something(param1, param2)
+        return {"score": result}
+
+    # Run single experiment
+    run.single(my_experiment, param1=1.0, param2=2.0)
+
+    # Auto-explore parameter space
+    run.auto_explore(my_experiment, strategy="random", budget=10)
+
+    # Get insights
+    print(run.insights())
+
+    # Launch web dashboard
+    run.dashboard()
 """
 
-# Default backend implementations
-from .backends.filesystem_artifacts import FileSystemArtifactManager
-from .backends.sqlite_storage import SQLiteStorage
-
-# Primary API - Clean decorator approach
-from .core.decorators import ExperimentBuilder, configure_experiment, experiment_config
-
-# Core interfaces for plugin development
-from .core.interfaces import (
-    ArtifactManagerInterface,
-    ExportInterface,
-    StorageInterface,
-    VisualizationInterface,
-)
-
-# Data models
+from . import run
 from .core.models import ExperimentData, ExperimentRun
-from .core.runner import ExperimentRunner
+from .core.simple_api import experiment
 
 __version__ = "0.1.0"
 
-# Primary API - recommended usage
+# Clean, simple API - this is all users need
 __all__ = [
-    # Main API
-    "experiment_config",
-    "ExperimentRunner",
-    # Alternative approaches
-    "ExperimentBuilder",
-    "configure_experiment",
-    # Core interfaces for extensibility
-    "StorageInterface",
-    "ArtifactManagerInterface",
-    "ExportInterface",
-    "VisualizationInterface",
-    # Data models
-    "ExperimentData",
-    "ExperimentRun",
-    # Default implementations
-    "SQLiteStorage",
-    "FileSystemArtifactManager",
+    "experiment",  # @experiment decorator
+    "run",  # All experiment operations
+    "ExperimentRun",  # Data model (for advanced users)
+    "ExperimentData",  # Alias for ExperimentRun
 ]
-
-# Optional plugins that may not be available
-try:
-    from .plugins.export import ExperimentExporter, JSONExporter, YAMLExporter  # noqa: F401
-    __all__.extend(["JSONExporter", "YAMLExporter", "ExperimentExporter"])
-except ImportError:
-    pass
-
-try:
-    from .plugins.visualization import ExperimentVisualizer  # noqa: F401
-    __all__.append("ExperimentVisualizer")
-except ImportError:
-    pass

@@ -1,9 +1,5 @@
-"""Backend implementations for storage and artifact management."""
+"""Backend implementations for storage."""
 
-from .filesystem_artifacts import FileSystemArtifactManager
-from .sqlite_storage import SQLiteStorage
+from .intelligent_storage import IntelligentStorage
 
-__all__ = [
-    "SQLiteStorage",
-    "FileSystemArtifactManager",
-]
+__all__ = ["IntelligentStorage"]
