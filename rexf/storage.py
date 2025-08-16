@@ -31,8 +31,17 @@ class SQLiteStorage(StorageInterface):
         """Close any open connections and clean up resources."""
         # Force close any lingering connections by creating and immediately closing one
         try:
+            # First, close any existing connections by forcing a garbage collection
+            import gc
+
+            gc.collect()
+
+            # Then explicitly close a connection to the database
             conn = sqlite3.connect(self.db_path)
             conn.close()
+
+            # Force another garbage collection to ensure cleanup
+            gc.collect()
         except Exception:
             pass
 

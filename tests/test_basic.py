@@ -120,9 +120,12 @@ def test_basic_functionality():
             try:
                 if 'runner' in locals():
                     runner.close()
-                # Small delay to allow Windows to release file handles
+                    # Force garbage collection to ensure cleanup
+                    import gc
+                    gc.collect()
+                # Longer delay to allow Windows to release file handles
                 import time
-                time.sleep(0.1)
+                time.sleep(0.5)
             except Exception:
                 pass
 
@@ -181,9 +184,12 @@ def test_with_visualization():
         try:
             if 'runner' in locals():
                 runner.close()
-            # Small delay to allow Windows to release file handles
+                # Force garbage collection to ensure cleanup
+                import gc
+                gc.collect()
+            # Longer delay to allow Windows to release file handles
             import time
-            time.sleep(0.1)
+            time.sleep(0.5)
         except Exception:
             pass
 

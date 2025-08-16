@@ -41,7 +41,7 @@ class ExperimentRunner:
 
     def close(self):
         """Close all resources and clean up connections."""
-        if hasattr(self.storage, 'close'):
+        if hasattr(self.storage, "close"):
             self.storage.close()
 
     def run(
