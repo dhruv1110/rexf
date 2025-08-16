@@ -1,0 +1,50 @@
+# Include the README and other important files
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include pyproject.toml
+
+# Include all documentation
+include USAGE.md
+include LIBRARY_OVERVIEW.md
+
+# Include examples but not their outputs
+recursive-include examples *.py
+exclude examples/*.db
+exclude examples/*.png
+exclude examples/*.json
+exclude examples/*.yaml
+exclude examples/*.csv
+
+# Include tests but not their outputs
+include test_basic.py
+exclude test_*.db
+exclude test_*.png
+exclude test_*.json
+exclude test_*.yaml
+exclude test_*.csv
+
+# Exclude all generated and temporary files
+global-exclude *.db
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .git*
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude *.egg-info
+global-exclude artifacts/
+global-exclude demo_artifacts/
+global-exclude simple_artifacts/
+global-exclude test_artifacts/
+global-exclude demo_*
+global-exclude *.png
+global-exclude *.jpg
+global-exclude *.jpeg
+global-exclude *.svg
+global-exclude *.pdf
+
+# Include typing information
+include rexf/py.typed

@@ -40,8 +40,23 @@ runner.compare_runs([run_id1, run_id2])
 
 ## Installation
 
+### From PyPI (recommended)
 ```bash
 pip install rexf
+```
+
+### From source
+```bash
+git clone https://github.com/dhruv1110/rexf.git
+cd rexf
+pip install -e .
+```
+
+### Development installation
+```bash
+git clone https://github.com/dhruv1110/rexf.git
+cd rexf
+pip install -e ".[dev]"
 ```
 
 ## Documentation
