@@ -32,8 +32,8 @@ __version__ = "0.1.0"
 
 # Clean, simple API - this is all users need
 __all__ = [
-    "experiment",      # @experiment decorator
-    "run",            # All experiment operations
+    "experiment",  # @experiment decorator
+    "run",  # All experiment operations
     "ExperimentRun",  # Data model (for advanced users)
-    "ExperimentData", # Alias for ExperimentRun
+    "ExperimentData",  # Alias for ExperimentRun
 ]

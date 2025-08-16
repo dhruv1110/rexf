@@ -124,7 +124,7 @@ class ExperimentRunner:
 
             self.storage.save_experiment(ExperimentData(experiment))
             print(f"❌ Experiment failed: {e}")
-            
+
             # Return the run_id even for failed experiments
             # This allows users to analyze failures without handling exceptions
             return run_id

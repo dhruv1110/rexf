@@ -47,7 +47,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         """Serve experiments data as JSON."""
         try:
             experiments = self.storage.list_experiments(limit=50)
-            
+
             experiments_data = []
             for exp in experiments:
                 exp_data = {
@@ -78,52 +78,58 @@ class DashboardHandler(BaseHTTPRequestHandler):
         """Serve chart data for visualization."""
         try:
             experiments = self.storage.list_experiments(limit=100)
-            
+
             # Prepare chart data
             chart_data = {
                 "metrics_over_time": [],
                 "parameter_space": [],
                 "available_metrics": set(),
-                "available_parameters": set()
+                "available_parameters": set(),
             }
-            
+
             for exp in experiments:
                 # Collect available metrics and parameters
-                for metric in (exp.metrics or {}):
+                for metric in exp.metrics or {}:
                     chart_data["available_metrics"].add(metric)
-                for param in (exp.parameters or {}):
+                for param in exp.parameters or {}:
                     chart_data["available_parameters"].add(param)
-                
+
                 # Metrics over time data
                 for metric_name, metric_value in (exp.metrics or {}).items():
-                    chart_data["metrics_over_time"].append({
-                        "experiment": exp.experiment_name,
-                        "run_id": exp.run_id[:8],
-                        "time": exp.start_time.isoformat(),
-                        "metric_name": metric_name,
-                        "metric_value": metric_value,
-                        "parameters": exp.parameters
-                    })
-                
+                    chart_data["metrics_over_time"].append(
+                        {
+                            "experiment": exp.experiment_name,
+                            "run_id": exp.run_id[:8],
+                            "time": exp.start_time.isoformat(),
+                            "metric_name": metric_name,
+                            "metric_value": metric_value,
+                            "parameters": exp.parameters,
+                        }
+                    )
+
                 # Parameter space data
                 if exp.parameters and exp.metrics:
                     for param_name, param_value in exp.parameters.items():
                         for metric_name, metric_value in exp.metrics.items():
-                            chart_data["parameter_space"].append({
-                                "experiment": exp.experiment_name,
-                                "run_id": exp.run_id[:8],
-                                "param_name": param_name,
-                                "param_value": param_value,
-                                "metric_name": metric_name,
-                                "metric_value": metric_value
-                            })
-            
+                            chart_data["parameter_space"].append(
+                                {
+                                    "experiment": exp.experiment_name,
+                                    "run_id": exp.run_id[:8],
+                                    "param_name": param_name,
+                                    "param_value": param_value,
+                                    "metric_name": metric_name,
+                                    "metric_value": metric_value,
+                                }
+                            )
+
             # Convert sets to lists for JSON serialization
             chart_data["available_metrics"] = list(chart_data["available_metrics"])
-            chart_data["available_parameters"] = list(chart_data["available_parameters"])
-            
+            chart_data["available_parameters"] = list(
+                chart_data["available_parameters"]
+            )
+
             self._send_json_response(chart_data)
-            
+
         except Exception as e:
             self._send_json_response({"error": str(e)}, status=500)
 
@@ -685,7 +691,7 @@ def run_dashboard(
     open_browser: bool = True,
 ) -> None:
     """Run the simple experiment dashboard web server."""
-    
+
     # Find an available port
     actual_port = port
     while True:
@@ -701,10 +707,10 @@ def run_dashboard(
 
     # Create server
     storage = IntelligentStorage(storage_path)
-    
+
     def handler_factory(*args, **kwargs):
         return DashboardHandler(storage, *args, **kwargs)
-    
+
     server = HTTPServer((host, actual_port), handler_factory)
 
     url = f"http://{host}:{actual_port}"

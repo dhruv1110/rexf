@@ -88,7 +88,7 @@ Examples:
     parser.add_argument(
         "--dashboard",
         action="store_true",
-        help="Launch web dashboard for interactive analysis"
+        help="Launch web dashboard for interactive analysis",
     )
 
     # Dashboard options
@@ -96,20 +96,15 @@ Examples:
         "--host",
         type=str,
         default="localhost",
-        help="Dashboard host (default: localhost)"
+        help="Dashboard host (default: localhost)",
     )
 
     parser.add_argument(
-        "--port",
-        type=int,
-        default=8080,
-        help="Dashboard port (default: 8080)"
+        "--port", type=int, default=8080, help="Dashboard port (default: 8080)"
     )
 
     parser.add_argument(
-        "--no-browser",
-        action="store_true",
-        help="Don't automatically open browser"
+        "--no-browser", action="store_true", help="Don't automatically open browser"
     )
 
     # Filtering options
@@ -156,7 +151,7 @@ Examples:
             result = execute_dashboard(None, args)
             output_results(result, args)
             return
-        
+
         # Initialize storage for other operations
         storage = IntelligentStorage(args.database)
 
@@ -201,19 +196,19 @@ def execute_dashboard(storage, args) -> dict:
     """Launch the web dashboard."""
     try:
         from ..dashboard.app import run_dashboard
-        
+
         print(f"🚀 Launching RexF Dashboard...")
         print(f"📊 Database: {args.database}")
         print(f"🌐 Host: {args.host}")
         print(f"🔌 Port: {args.port}")
         print(f"🌐 URL: http://{args.host}:{args.port}")
-        
+
         if args.no_browser:
             print("📝 Browser auto-launch disabled")
-        
+
         print("⏹️  Press Ctrl+C to stop the dashboard")
         print("-" * 50)
-        
+
         # Launch dashboard (it will create its own storage)
         run_dashboard(
             storage_path=args.database,
@@ -221,7 +216,7 @@ def execute_dashboard(storage, args) -> dict:
             port=args.port,
             open_browser=not args.no_browser,
         )
-        
+
         return {
             "operation": "dashboard",
             "message": "Dashboard launched successfully",
@@ -229,7 +224,7 @@ def execute_dashboard(storage, args) -> dict:
             "port": args.port,
             "database": args.database,
         }
-        
+
     except ImportError:
         return {
             "operation": "dashboard",
