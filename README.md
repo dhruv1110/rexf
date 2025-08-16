@@ -1,5 +1,11 @@
 # rexf - Reproducible Experiments Framework
 
+[![CI](https://github.com/dhruv1110/rexf/workflows/CI/badge.svg)](https://github.com/dhruv1110/rexf/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/dhruv1110/rexf/workflows/CodeQL/badge.svg)](https://github.com/dhruv1110/rexf/actions/workflows/codeql.yml)
+[![PyPI](https://img.shields.io/pypi/v/rexf)](https://pypi.org/project/rexf/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/rexf)](https://pypi.org/project/rexf/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A lightweight Python library for reproducible computational experiments that uses decorators to mark parameters, results, metrics, artifacts, and seeds.
 
 ## Features
