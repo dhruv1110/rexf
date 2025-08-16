@@ -374,27 +374,50 @@ class ExperimentVisualizer(VisualizationInterface):
                 "random_seed": exp.random_seed,
             }
 
-            # Add parameters
+            # Add parameters (ensure serializable)
             for param in sorted(all_params):
-                row[f"param_{param}"] = exp.parameters.get(param)
+                value = exp.parameters.get(param)
+                # Convert numpy arrays to lists for pandas compatibility
+                if HAS_NUMPY and np and isinstance(value, np.ndarray):
+                    value = value.tolist()
+                row[f"param_{param}"] = value
 
-            # Add metrics
+            # Add metrics (ensure serializable)
             for metric in sorted(all_metrics):
-                row[f"metric_{metric}"] = exp.metrics.get(metric)
+                value = exp.metrics.get(metric)
+                # Convert numpy arrays to lists for pandas compatibility
+                if HAS_NUMPY and np and isinstance(value, np.ndarray):
+                    value = value.tolist()
+                row[f"metric_{metric}"] = value
 
-            # Add results
+            # Add results (ensure serializable)
             for result in sorted(all_results):
-                row[f"result_{result}"] = exp.results.get(result)
+                value = exp.results.get(result)
+                # Convert numpy arrays to lists for pandas compatibility
+                if HAS_NUMPY and np and isinstance(value, np.ndarray):
+                    value = value.tolist()
+                row[f"result_{result}"] = value
 
             data.append(row)
 
         if HAS_PANDAS:
-            df = pd.DataFrame(data)
+            try:
+                df = pd.DataFrame(data)
 
-            if save_path:
-                df.to_csv(save_path, index=False)
+                if save_path:
+                    df.to_csv(save_path, index=False)
 
-            return df
+                return df
+            except (TypeError, ValueError) as e:
+                # Fall back to dict format if pandas can't handle the data
+                if save_path:
+                    import csv
+                    with open(save_path, "w", newline="") as f:
+                        if data:
+                            writer = csv.DictWriter(f, fieldnames=data[0].keys())
+                            writer.writeheader()
+                            writer.writerows(data)
+                return data
         else:
             # Return dict if pandas not available
             if save_path:

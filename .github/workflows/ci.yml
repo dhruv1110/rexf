@@ -59,7 +59,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest tests/ -v --cov=rexf --cov-report=xml --cov-report=term-missing
+        pytest tests/ -v --tb=short --cov=rexf --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
