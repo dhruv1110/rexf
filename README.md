@@ -244,28 +244,28 @@ run.single(my_experiment, learning_rate=0.05)
 
 ## 🛠️ Architecture
 
-RexF uses a plugin-based architecture:
+RexF uses a clean, modular architecture:
 
 ```
 rexf/
-├── core/           # Core experiment logic
-├── backends/       # Storage implementations (SQLite, etc.)
-├── intelligence/   # Smart features (insights, exploration)
+├── core/           # Core experiment logic (@experiment decorator)
+├── backends/       # Storage implementation (IntelligentStorage)
+├── intelligence/   # Smart features (insights, exploration, queries)
 ├── dashboard/      # Web interface
 ├── cli/           # Command-line tools
-└── plugins/       # Extensions (export, visualization)
+└── run.py         # Main user interface
 ```
 
-### Backends
-- **SQLiteStorage**: Fast local storage (default)
-- **IntelligentStorage**: Enhanced analytics and querying
-- **FileSystemArtifacts**: Local artifact management
+### Core Components
+- **IntelligentStorage**: Analytics-focused SQLite storage with advanced querying
+- **Simple API**: Single `@experiment` decorator for zero-configuration usage
+- **Smart Intelligence**: Automated insights, exploration, and recommendations
 
 ### Intelligence Modules
-- **ExplorationEngine**: Automated parameter space exploration
-- **InsightsEngine**: Pattern detection and recommendations
-- **SuggestionEngine**: Next experiment recommendations
-- **SmartQueryEngine**: Natural language-like querying
+- **ExplorationEngine**: Automated parameter space exploration (grid, random, adaptive)
+- **InsightsEngine**: Pattern detection and automated analysis
+- **SuggestionEngine**: Intelligent next experiment recommendations
+- **SmartQueryEngine**: Expression-based experiment querying
 
 ## 📊 Data Storage
 
@@ -322,8 +322,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🔗 Links
 
-- **Documentation**: [GitHub Pages](https://dhruv1110.github.io/rexf/)
+- **Documentation**: [Read the Docs](https://rexf.readthedocs.io/)
 - **PyPI**: [https://pypi.org/project/rexf/](https://pypi.org/project/rexf/)
+- **GitHub**: [https://github.com/dhruv1110/rexf](https://github.com/dhruv1110/rexf)
 - **Issues**: [GitHub Issues](https://github.com/dhruv1110/rexf/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/dhruv1110/rexf/discussions)
 
