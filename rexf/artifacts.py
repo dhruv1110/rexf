@@ -9,7 +9,7 @@ import json
 import pickle
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from .interfaces import ArtifactManagerInterface
 
@@ -58,7 +58,7 @@ class FileSystemArtifactManager(ArtifactManagerInterface):
                 return json.load(f)
         return {}
 
-    def _detect_file_type(self, data: Any) -> tuple[str, str]:
+    def _detect_file_type(self, data: Any) -> Tuple[str, str]:
         """Detect file type and extension based on data type."""
         try:
             import numpy as np
